@@ -72,21 +72,6 @@
 		</div>
 	</nav>
 
-    <div id="fh5co-about">
-		<div class="container">
-			<div class="row animate-box">
-				<div class="col-md-8 col-md-offset-2 text-center fh5co-heading">
-					<h2>CodeMetaSoft</h2>
-				</div>
-				<br>
-				<br>
-				<div style="text-align: center">
-					<img src="./media/image.png">
-				</div>
-			</div>
-		</div>
-	</div>
-
     <!-- fh5co-wireframe   fh5co-features-->
 	<div id="fh5co-wireframe">
 		<div class="container">
@@ -108,62 +93,51 @@
                             return response.text();
                         })
                         .then(data => {
-							// Se obtiene JSON con bibParse
 							const bibData = bibtexParse.toJSON(data);
 							const output = document.getElementById('output');
-							
-							output.innerHTML = '';
 					
-							// Se recorre el JSON
+							let content = '';
+					
 							bibData.forEach(entry => {
-							  const tags = entry.entryTags;
+								const tags = entry.entryTags;
+								let entryText = '<div class="publication">';
 					
-							  const publicationDiv = document.createElement('div');
-							  publicationDiv.className = 'publication';
+								// Título aparte
+								if (tags.title) {
+									entryText += `<h3>${tags.title}</h3>`;
+								} else {
+									entryText += `<h3>Untitled</h3>`;
+								}
 					
-							  const title = document.createElement('h3');
-							  title.textContent = tags.title;
-							  publicationDiv.appendChild(title);
+								// Construcción de la información en un solo <p>
+								let details = '';
 					
-							  if (tags.author) {
-								const authors = document.createElement('p');
-								authors.innerHTML = `<strong>Authors:</strong> ${tags.author}`;
-								publicationDiv.appendChild(authors);
-							  }
+								if (tags.author) {
+									details += `${tags.author}. `;
+								}
+								if (tags.booktitle) {
+									details += `<em>${tags.booktitle}</em>. `;
+								}
+								if (tags.publisher) {
+									details += `${tags.publisher}. `;
+								}
+								if (tags.series) {
+									details += `${tags.series}. `;
+								}
+								if (tags.year) {
+									details += `${tags.year}. `;
+								}
+								if (tags.url) {
+									details += `<a href="${tags.url}" target="_blank">${tags.url}</a>. `;
+								}
 					
-							  if (tags.booktitle) {
-								const booktitle = document.createElement('p');
-								booktitle.innerHTML = `<strong>Booktitle:</strong> ${tags.booktitle}`;
-								publicationDiv.appendChild(booktitle);
-							  }
-					
-							  if (tags.publisher) {
-								const publisher = document.createElement('p');
-								publisher.innerHTML = `<strong>Publisher:</strong> ${tags.publisher}`;
-								publicationDiv.appendChild(publisher);
-							  }
-					
-							  if (tags.series) {
-								const series = document.createElement('p');
-								series.innerHTML = `<strong>Series:</strong> ${tags.series}`;
-								publicationDiv.appendChild(series);
-							  }
-					
-							  if (tags.year) {
-								const year = document.createElement('p');
-								year.innerHTML = `<strong>Year:</strong> ${tags.year}`;
-								publicationDiv.appendChild(year);
-							  }
-					
-							  if (tags.url) {
-								const url = document.createElement('p');
-								url.innerHTML = `<a href="${tags.url}" target="_blank">See Publication</a>`;
-								publicationDiv.appendChild(url);
-							  }
-					
-							  output.appendChild(publicationDiv);
+								entryText += `<p>${details}</p>`;
+								entryText += '</div>';
+								content += entryText;
 							});
-						  })
+					
+							output.innerHTML = content;
+						})
                         .catch(error => {
                             document.getElementById('output').textContent = `Error: ${error.message}`;
                         });
